@@ -1,6 +1,6 @@
 # Landing page — Emmanuel Mikaelian
 
-**Démo en ligne → https://landing-mikaelian.vercel.app**
+**Démo en ligne → https://emmanuel-mikaelian.vercel.app**
 
 One-page brutaliste, épurée. HTML + CSS + JS **vanilla**, zéro dépendance runtime,
 zéro tracker, zéro cookie. Pensée pour un Lighthouse perf > 95.
