@@ -1,0 +1,640 @@
+/* =============================================================
+   Emmanuel Mikaelian — Landing
+   Brutalisme Swiss-industriel (mode print/clair).
+   Monochrome chaud + vermillon unique. Zéro dépendance.
+   Curseurs : VARIANCE 9 · MOTION 6 · DENSITY 2.
+   Geste signature : le RETRAIT du superflu, joué mécaniquement.
+   ============================================================= */
+
+/* ----------------------------- Tokens ----------------------- */
+:root {
+  --paper:   #f2f1ec;   /* substrat documentation, non blanchi          */
+  --paper-2: #eae8e1;   /* second ton de papier (cartes au survol)      */
+  --ink:     #111110;   /* encre carbone                                 */
+  --muted:   #6a695f;   /* gris discret — assombri pour passer AA (4.9:1) */
+  --line:    #d6d5cd;   /* grille honnête                                */
+  --accent:  #ff3b00;   /* vermillon — registre DÉCISION / action        */
+  --blue:    #1f44ff;   /* cobalt électrique — registre RIGUEUR / santé   */
+
+  /* 3 voix typographiques : impact · substance · technique */
+  --font-grotesk: "Helvetica Neue", Helvetica, Arial, "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --maxw: 1320px;
+  --gutter: clamp(1.25rem, 5vw, 5rem);
+  --rule: 1.5px;
+
+  /* Easings mécaniques — nets, jamais bouncy (cf. brief) */
+  --ease-mech: cubic-bezier(.85, 0, .15, 1);   /* snap d'imprimante       */
+  --ease-out:  cubic-bezier(.2, .9, .15, 1);   /* sortie franche          */
+}
+
+/* ----------------------------- Reset ------------------------ */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-grotesk);
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, p, blockquote, figure, ol { margin: 0; }
+ol { list-style: none; padding: 0; }
+a { color: inherit; }
+em { font-style: normal; }
+
+::selection { background: var(--accent); color: var(--paper); }
+
+/* Signature — la marque vermillon de « ce qui reste » */
+.mark { color: var(--accent); white-space: nowrap; }
+
+/* La marque de « ce qui a été retiré » : le trait qui barre */
+.strike {
+  position: relative;
+  color: var(--muted);
+}
+.strike::after {
+  content: "";
+  position: absolute;
+  left: -0.05em; right: -0.05em;
+  top: 52%;
+  height: var(--rule);
+  background: var(--accent);
+  transform: scaleX(var(--strike, 0));
+  transform-origin: left center;
+  transition: transform .55s var(--ease-mech);
+}
+
+/* ----------------------- Grain analogique ------------------- */
+/* Texture « document déclassifié » — fixe, au-dessus de tout, inerte. */
+.grain { display: none; }
+.grain.is-on::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: .05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(3) infinite;
+}
+@keyframes grain {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(-2%, 1%); }
+  66%  { transform: translate(1%, -2%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ----------------------- Curseur crosshair ------------------ */
+.cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 26px; height: 26px;
+  /* centrage par transform (-50%) dans render() → exact à toute taille/état */
+  pointer-events: none;
+  z-index: 70;
+  mix-blend-mode: difference;
+  transition: width .18s var(--ease-mech), height .18s var(--ease-mech), opacity .2s linear;
+}
+.cursor::before, .cursor::after {
+  content: "";
+  position: absolute;
+  background: #fff;            /* difference → s'inverse sur le fond */
+}
+.cursor::before { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); }
+.cursor::after  { top: 50%; left: 0; height: 1px; width: 100%; transform: translateY(-50%); }
+.cursor.is-link  { width: 44px; height: 44px; }
+.cursor.is-card  { width: 60px; height: 60px; }
+.cursor.is-down  { width: 18px; height: 18px; }
+body.has-cursor,
+body.has-cursor a,
+body.has-cursor .card { cursor: none; }
+
+/* ------------------------- Accessibilité -------------------- */
+.skip-link {
+  position: absolute;
+  left: -9999px; top: 0;
+  background: var(--ink);
+  color: var(--paper);
+  padding: .75rem 1rem;
+  z-index: 100;
+  font-family: var(--font-mono);
+  font-size: .8rem;
+}
+.skip-link:focus { left: 0; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+/* --------------------------- Header ------------------------- */
+.site-header {
+  /* Non-collant : avec les numéros géants, un header sticky percuterait la typo.
+     C'est un bandeau de tête, pas une nav (cf. brief « pas de menu chargé »). */
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: .85rem var(--gutter);
+  background: var(--paper);
+  border-bottom: var(--rule) solid var(--ink);
+  font-family: var(--font-mono);
+  font-size: .76rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.site-header__name { font-weight: 700; }
+.site-header__spec {
+  justify-self: center;
+  color: var(--muted);
+  font-size: .72rem;
+  white-space: nowrap;
+}
+.site-header__spec .dot { color: var(--accent); font-size: .6em; vertical-align: middle; }
+.site-header__role { justify-self: end; color: var(--muted); }
+
+/* ---------------------------- Hero -------------------------- */
+.hero {
+  position: relative;
+  min-height: calc(100svh - 3.1rem);
+  display: flex;
+  align-items: center;
+  padding: clamp(2rem, 6vh, 5rem) var(--gutter);
+  border-bottom: var(--rule) solid var(--ink);
+  overflow: hidden;
+}
+
+.hero__noise { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.hero__noise span {
+  position: absolute;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+
+.hero__essence {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+}
+
+.hero__status {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink);            /* petit corps → ink pour l'AA ; le // marque le registre technique */
+  margin-bottom: clamp(1rem, 3vh, 1.75rem);
+}
+
+.hero__title {
+  font-size: clamp(2.6rem, 13vw, 5.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  font-weight: 800;
+  margin-bottom: clamp(1.75rem, 4vh, 2.5rem);
+}
+/* Chaque ligne s'assemble par un wipe mécanique vertical */
+.hero__line { display: block; overflow: hidden; }
+.hero__line > span { display: block; }
+.is-animated .hero__line > span { transform: translateY(110%); }
+.is-animated.is-revealed .hero__line > span {
+  transform: translateY(0);
+  transition: transform .6s var(--ease-mech);
+}
+.is-animated.is-revealed .hero__line:nth-child(2) > span { transition-delay: .08s; }
+.is-animated.is-revealed .hero__line:nth-child(3) > span { transition-delay: .16s; }
+
+.hero__subtitle {
+  font-family: var(--font-serif);
+  max-width: 38ch;
+  font-size: clamp(1.15rem, 1rem + 0.7vw, 1.6rem);
+  line-height: 1.45;
+  font-weight: 400;
+}
+.hero__context {
+  max-width: 46ch;
+  margin-top: 1.1rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: .82rem;
+  line-height: 1.55;
+}
+.hero__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  margin-top: clamp(2rem, 5vh, 3rem);
+}
+.hero__link {
+  font-family: var(--font-mono);
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  text-decoration: none;
+  padding-bottom: .35rem;
+  position: relative;
+}
+.hero__link::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0; right: 0;
+  height: var(--rule);
+  background: var(--ink);
+  transform-origin: left center;
+  transition: transform .35s var(--ease-mech), background .2s linear;
+}
+.hero__link:hover { color: var(--accent); }
+.hero__link:hover::after { background: var(--accent); transform: scaleY(2.5); }
+
+/* Desktop : asymétrie — titre géant à gauche, promesse calée en bas à droite */
+@media (min-width: 900px) {
+  .hero__essence {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    grid-template-rows: auto 1fr;
+    align-items: end;
+    column-gap: clamp(2.5rem, 6vw, 6rem);
+  }
+  .hero__status { grid-column: 1 / -1; }
+  .hero__title  { grid-column: 1; grid-row: 2; margin-bottom: 0; align-self: start;
+                  font-size: clamp(4rem, 7.2vw, 7.5rem); }
+  .hero__lead   { grid-column: 2; grid-row: 2; align-self: end;
+                  padding-bottom: clamp(0.5rem, 1.5vh, 1.5rem); }
+}
+
+/* ------------------------- Sections ------------------------- */
+.section {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding: clamp(4rem, 11vh, 9rem) var(--gutter);
+  border-bottom: var(--rule) solid var(--line);
+}
+
+.section__head {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: end;
+  gap: .5rem clamp(1.25rem, 3vw, 2.5rem);
+  margin-bottom: clamp(2.5rem, 6vh, 4.5rem);
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--ink);
+}
+/* le trait de tête se dessine au reveal */
+.section__head::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -2px;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .7s var(--ease-mech);
+}
+.is-in .section__head::after { transform: scaleX(1); }
+
+/* Numéro géant qui déborde (Swiss industrial) */
+.section__index {
+  font-size: clamp(3.5rem, 11vw, 8.5rem);
+  line-height: 0.78;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  color: var(--accent);
+  font-feature-settings: "tnum";
+}
+.section__label {
+  font-size: clamp(1.25rem, 1rem + 1.4vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  padding-bottom: .4rem;
+}
+.section__note {
+  grid-column: 1 / -1;
+  margin-top: .75rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: .8rem;
+}
+
+/* Reveal mécanique — montée franche, jamais floue */
+.reveal { opacity: 0; transform: translateY(26px); }
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity .45s var(--ease-out), transform .6s var(--ease-mech);
+}
+
+/* --------------------- 01 Problèmes ------------------------- */
+.problems { display: grid; gap: clamp(2rem, 5vh, 3.5rem); }
+.problem {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1rem, 4vw, 4rem);
+  align-items: start;
+  padding-top: 1.5rem;
+  border-top: var(--rule) solid var(--line);
+}
+.problem:first-child { border-top: none; padding-top: 0; }
+.problem__pain {
+  font-size: clamp(1.1rem, 0.95rem + 0.9vw, 1.7rem);
+  font-weight: 600;
+  line-height: 1.25;
+}
+.problem__fix {
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 0.95rem + 0.55vw, 1.45rem);
+  line-height: 1.5;
+}
+
+/* --------------------- Bandeaux marquee --------------------- */
+/* Substance vérifiable, deux registres. Sens & vitesses opposés.
+   Rouge = réalisations livrées · bleu = cadre santé maîtrisé. */
+.strips { overflow: hidden; border-block: 2px solid var(--ink); }
+.strip { overflow: hidden; }
+.strip + .strip { border-top: 2px solid var(--ink); }
+.strip--build { background: var(--accent); }
+.strip--frame { background: var(--blue); }
+
+.strip__track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: .65rem 0;
+  will-change: transform;
+}
+.strip__track span {
+  font-family: var(--font-mono);
+  font-size: clamp(.78rem, 0.7rem + 0.4vw, 1rem);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-weight: 700;
+  padding-inline: 1.6rem;
+}
+/* séparateur net entre items (marque structurelle, pas ornement) */
+.strip__track span::before { content: "/ "; opacity: .45; }
+
+.strip--build .strip__track { animation: marquee 34s linear infinite; }
+.strip--build .strip__track span { color: var(--ink); }            /* ink/rouge → AA */
+.strip--frame .strip__track { animation: marquee 52s linear infinite reverse; }
+.strip--frame .strip__track span { color: #fff; }                  /* blanc/bleu → AA */
+
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* ----------------------- 02 Vision -------------------------- */
+/* Pression sensorielle par l'ÉCHELLE : la police reste simple et nette,
+   c'est la taille du message qui presse. Le bloc remplit la largeur. */
+.section--vision { padding-block: clamp(4.5rem, 13vh, 11rem); }
+.vision {
+  font-family: var(--font-serif);
+  max-width: min(100%, 26ch);
+  font-size: clamp(1.85rem, 1rem + 4.8vw, 5.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+  text-wrap: pretty;
+}
+
+/* --------------------- 03 Réalisations ---------------------- */
+.work {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--rule);
+  background: var(--line);
+  border: var(--rule) solid var(--line);
+}
+.card {
+  position: relative;
+  background: var(--paper);
+  padding: clamp(1.75rem, 4vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden;
+  transition: background .3s var(--ease-out);
+}
+.card::before { /* repère crosshair coin haut-droit */
+  content: "+";
+  position: absolute;
+  top: .75rem; right: .9rem;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  font-size: 1rem;
+  transition: color .3s linear, transform .4s var(--ease-mech);
+}
+.card:hover, .card:focus-within { background: var(--paper-2); }
+.card:hover::before, .card:focus-within::before { color: var(--accent); transform: rotate(45deg); }
+
+.card__stamp {
+  position: absolute;
+  top: 1.4rem; right: 1.4rem;
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  padding: .15rem .5rem;
+  transform: rotate(-4deg) scale(0.6);
+  opacity: 0;
+  transition: opacity .3s linear, transform .45s var(--ease-mech);
+}
+.card.is-simplified .card__stamp { opacity: 1; transform: rotate(-4deg) scale(1); }
+
+.card__name {
+  font-size: clamp(1.2rem, 1rem + 1vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.card__before {
+  position: relative;
+  color: var(--muted);
+  font-size: .95rem;
+  line-height: 1.4;
+  max-height: 8rem;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height .55s var(--ease-mech), opacity .4s linear;
+}
+.card__before::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: var(--rule);
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .5s var(--ease-mech);
+}
+.card.is-simplified .card__before { max-height: 1.4rem; opacity: .35; }
+.card.is-simplified .card__before::after { transform: scaleX(1); }
+
+.card__after {
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 0.95rem + 0.5vw, 1.4rem);
+  font-weight: 400;
+  line-height: 1.5;
+  transition: transform .4s var(--ease-mech);
+}
+.card.is-simplified .card__after { transform: translateY(-0.25rem); }
+
+/* ---------------------- 04 Pourquoi ------------------------- */
+.why {
+  font-family: var(--font-serif);
+  max-width: 30ch;
+  font-size: clamp(1.4rem, 1rem + 2.4vw, 3.1rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+
+/* ----------------------- 05 Méthode ------------------------- */
+.method {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+.principle {
+  padding-top: 1.25rem;
+  border-top: 3px solid var(--ink);
+}
+.principle__id {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  color: var(--blue);
+  margin-bottom: .75rem;
+  letter-spacing: .05em;
+}
+.principle__title {
+  font-size: clamp(1.15rem, 1rem + 0.8vw, 1.6rem);
+  font-weight: 800;
+  margin-bottom: .75rem;
+}
+.principle__body {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+/* ------------------------- 06 CTA --------------------------- */
+.section--cta { border-bottom: none; }
+.cta { max-width: 30ch; }
+.cta__title {
+  font-size: clamp(2.2rem, 1rem + 6vw, 6rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+}
+.cta__text {
+  font-family: var(--font-serif);
+  max-width: 44ch;
+  font-size: clamp(1.1rem, 0.95rem + 0.55vw, 1.45rem);
+  line-height: 1.5;
+  margin-bottom: 2.5rem;
+}
+.cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+}
+.cta__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--accent);
+  color: var(--ink);             /* ink sur vermillon → AA confortable */
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: .01em;
+  padding: 1rem 1.25rem 1rem 1.75rem;
+  border: 2px solid var(--accent);
+  transition: background .15s var(--ease-out), color .15s var(--ease-out);
+}
+.cta__button-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem; height: 2rem;
+  background: var(--ink);
+  color: var(--accent);
+  transition: transform .3s var(--ease-mech), background .15s linear, color .15s linear;
+}
+.cta__button:hover { background: transparent; color: var(--ink); }
+.cta__button:hover .cta__button-mark { transform: translateX(4px); }
+.cta__secondary {
+  font-family: var(--font-mono);
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  text-decoration: none;
+  border-bottom: var(--rule) solid var(--ink);
+  padding-bottom: .3rem;
+  transition: color .2s linear, border-color .2s linear;
+}
+.cta__secondary:hover { color: var(--accent); border-color: var(--accent); }
+
+/* -------------------------- Footer -------------------------- */
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem var(--gutter);
+  border-top: var(--rule) solid var(--ink);
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--muted);
+}
+.site-footer a { text-decoration: none; }
+.site-footer a:hover { color: var(--accent); }
+
+/* --------------------------- Responsive --------------------- */
+@media (max-width: 900px) {
+  .site-header { grid-template-columns: 1fr auto; }
+  .site-header__spec { display: none; }
+}
+@media (max-width: 480px) {
+  .site-header { gap: .5rem; font-size: .68rem; }
+  .site-header__name, .site-header__role { min-width: 0; }
+}
+@media (max-width: 360px) {
+  .site-header { grid-template-columns: 1fr; }
+  .site-header__role { display: none; }
+}
+@media (max-width: 720px) {
+  .problem { grid-template-columns: 1fr; gap: .75rem; }
+  .work { grid-template-columns: 1fr; }
+  .method { grid-template-columns: 1fr; }
+  .section__head { grid-template-columns: auto 1fr; }
+}
+
+/* ----------------- Mouvement réduit : tout net -------------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+  .hero__noise { display: none; }
+  .is-animated .hero__line > span { transform: none; }
+  .strike::after { transform: scaleX(1); }
+  .section__head::after { transform: scaleX(1); }
+  .card__before { max-height: 1.4rem; opacity: .35; }
+  .card__before::after { transform: scaleX(1); }
+  .card__stamp { opacity: 1; transform: rotate(-4deg) scale(1); }
+  .grain.is-on::after { animation: none; }
+}

@@ -1,0 +1,19 @@
+# Le repo ne contient que le site livré : index.html, style.css, script.js, README.
+
+# Outillage Claude / skills de design installées (non liées au site)
+.claude/
+.agents/
+skills-lock.json
+
+# Docs de travail internes (brief & setup) — non destinés au repo public
+brief-landing-page.md
+setup-skills.md
+
+# Dépendances / build (le site est 100% statique, rien à builder)
+node_modules/
+.vercel/
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+*.log
