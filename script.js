@@ -35,11 +35,18 @@
     const status = document.querySelector("[data-status]");
     const essence = document.querySelector(".hero__essence");
 
-    // Sans mouvement : on montre directement l'état final, net.
-    if (reduceMotion || !layer) {
+    // Le geste complet ne se joue qu'à la PREMIÈRE visite de la session :
+    // faire attendre 2,5 s un visiteur qui revient contredirait « vite ».
+    let heroAlreadyPlayed = false;
+    try { heroAlreadyPlayed = sessionStorage.getItem("hero-played") === "1"; } catch (e) {}
+
+    // Sans mouvement (ou déjà vu) : on montre directement l'état final, net.
+    if (reduceMotion || heroAlreadyPlayed || !layer) {
+      if (layer && layer.isConnected) layer.remove();
       if (status) status.textContent = "// SUPERFLU RETIRÉ — RESTE L'ESSENTIEL";
       return;
     }
+    try { sessionStorage.setItem("hero-played", "1"); } catch (e) {}
 
     // État lisible garanti : appelé à la fin normale ET en cas d'échec JS.
     const revealHero = () => {
@@ -114,15 +121,37 @@
   function setupCards() {
     const cards = document.querySelectorAll(".card");
     if (!cards.length) return;
+
+    // aria-pressed du bouton crosshair reflète l'état complexe ⇄ simple
+    const sync = (card) => {
+      const btn = card.querySelector(".card__mark");
+      if (btn) btn.setAttribute("aria-pressed", String(card.classList.contains("is-simplified")));
+    };
+    const setSimplified = (card, on) => {
+      card.classList.toggle("is-simplified", on);
+      sync(card);
+    };
+
+    // Carte cliquable : rejouer le geste (le bouton porte le clavier,
+    // le clic n'importe où sur la carte délègue — sauf sélection de texte)
+    cards.forEach((card) => {
+      sync(card);
+      card.addEventListener("click", () => {
+        const sel = window.getSelection();
+        if (sel && sel.toString()) return;
+        setSimplified(card, !card.classList.contains("is-simplified"));
+      });
+    });
+
     if (reduceMotion || !("IntersectionObserver" in window)) {
-      cards.forEach((c) => c.classList.add("is-simplified"));
+      cards.forEach((c) => setSimplified(c, true));
       return;
     }
     const io = new IntersectionObserver((entries, obs) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         const idx = Array.prototype.indexOf.call(cards, entry.target);
-        window.setTimeout(() => entry.target.classList.add("is-simplified"), (idx % 2) * 140);
+        window.setTimeout(() => setSimplified(entry.target, true), (idx % 2) * 140);
         obs.unobserve(entry.target);
       });
     }, { threshold: 0.5 });
@@ -146,7 +175,7 @@
 
   function setupStrikes() {
     const strikes = Array.from(document.querySelectorAll(".strike"));
-    observeOnce(strikes, (el) => el.style.setProperty("--strike", "1"), { threshold: 0.9 });
+    observeOnce(strikes, (el) => el.classList.add("is-struck"), { threshold: 0.9 });
   }
 
   function setupReveal() {

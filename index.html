@@ -6,6 +6,10 @@
 
   <title>Emmanuel Mikaelian — Pharmacien & concepteur d’outils IA</title>
   <meta name="description" content="Je vois où aller, j’enlève le superflu, et je livre des outils justes — vite, beaux, et conformes là où ça compte. Pharmacien et concepteur d’outils IA pour la santé." />
+  <meta name="theme-color" content="#f2f1ec" />
+  <link rel="canonical" href="https://emmanuel-mikaelian.vercel.app/" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="touch-icon.png" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -13,10 +17,25 @@
   <meta property="og:url" content="https://emmanuel-mikaelian.vercel.app" />
   <meta property="og:title" content="Emmanuel Mikaelian — La complexité n’est pas une fatalité." />
   <meta property="og:description" content="Pharmacien et concepteur d’outils IA. J’opère là où l’erreur a des conséquences : la santé." />
-  <!-- og:image + og:url : compléter après déploiement (image 1200×630, OG_IMAGE_À_REMPLIR) -->
-  <meta property="og:image" content="OG_IMAGE_À_REMPLIR" />
+  <meta property="og:image" content="https://emmanuel-mikaelian.vercel.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Emmanuel Mikaelian — La complexité n’est pas une fatalité." />
   <meta name="twitter:card" content="summary_large_image" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Emmanuel Mikaelian",
+    "jobTitle": "Pharmacien & concepteur d’outils IA",
+    "description": "Pharmacien et concepteur d’outils IA pour la santé. Je vois où aller, j’enlève le superflu, et je livre des outils justes — conformes HDS et RGPD.",
+    "url": "https://emmanuel-mikaelian.vercel.app/",
+    "email": "mailto:mikaelian78@gmail.com",
+    "sameAs": ["https://www.linkedin.com/in/emmanuel-mikaelian/"],
+    "knowsAbout": ["Assurance qualité pharmaceutique", "IA générative", "RAG", "Conformité HDS", "RGPD"]
+  }
+  </script>
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -25,7 +44,7 @@
 
   <header class="site-header">
     <span class="site-header__name">Emmanuel&nbsp;Mikaelian</span>
-    <samp class="site-header__spec" aria-hidden="true">48.85°N&nbsp;/&nbsp;2.35°E · REV&nbsp;2025.1 · <span class="dot">●</span>&nbsp;DISPONIBLE</samp>
+    <samp class="site-header__spec" aria-hidden="true">48.85°N&nbsp;/&nbsp;2.35°E · REV&nbsp;2026.1 · <span class="dot">●</span>&nbsp;DISPONIBLE&nbsp;·&nbsp;CDI</samp>
     <span class="site-header__role">Pharmacien · Outils&nbsp;IA</span>
   </header>
 
@@ -81,7 +100,7 @@
         </li>
         <li class="problem">
           <p class="problem__pain"><span class="strike">L’IA vous attire mais le cadre santé vous freine.</span></p>
-          <p class="problem__fix">Je construis dans le respect HDS et RGPD, sans sacrifier la vitesse ni l’élégance.</p>
+          <p class="problem__fix">Je construis dans le respect <abbr title="Hébergement de Données de Santé — certification française">HDS</abbr> et RGPD, sans sacrifier la vitesse ni l’élégance.</p>
         </li>
       </ol>
     </section>
@@ -89,11 +108,18 @@
     <!-- =============== BANDEAUX — CE QUE JE LIVRE / LE CADRE ======== -->
     <!-- Substance vérifiable. Rouge = réalisations concrètes,
          bleu = le cadre santé maîtrisé. Sens & vitesses opposés. -->
+    <p class="sr-only">
+      Ce que je livre : copilotes qualité, éligibilité vaccinale E.V.A,
+      RAG sur procédures, dashboards KPI, suivi CAPA, pilotage officine et PDA,
+      revue de direction, copilote fiscal.
+      Le cadre : hébergement HDS, RGPD, traçabilité, décisions réversibles,
+      sources citées, humain dans la boucle — conforme par défaut.
+    </p>
     <div class="strips" aria-hidden="true">
       <div class="strip strip--build">
         <div class="strip__track">
-          <span>Copilotes&nbsp;qualité</span><span>RAG&nbsp;sur&nbsp;procédures</span><span>Dashboards&nbsp;KPI</span><span>Suivi&nbsp;CAPA</span><span>Cartographie&nbsp;des&nbsp;SOPs</span><span>Revue&nbsp;de&nbsp;direction</span><span>Copilote&nbsp;fiscal</span>
-          <span>Copilotes&nbsp;qualité</span><span>RAG&nbsp;sur&nbsp;procédures</span><span>Dashboards&nbsp;KPI</span><span>Suivi&nbsp;CAPA</span><span>Cartographie&nbsp;des&nbsp;SOPs</span><span>Revue&nbsp;de&nbsp;direction</span><span>Copilote&nbsp;fiscal</span>
+          <span>Copilotes&nbsp;qualité</span><span>Éligibilité&nbsp;vaccinale</span><span>RAG&nbsp;sur&nbsp;procédures</span><span>Dashboards&nbsp;KPI</span><span>Suivi&nbsp;CAPA</span><span>Pilotage&nbsp;officine&nbsp;&amp;&nbsp;PDA</span><span>Revue&nbsp;de&nbsp;direction</span><span>Copilote&nbsp;fiscal</span>
+          <span>Copilotes&nbsp;qualité</span><span>Éligibilité&nbsp;vaccinale</span><span>RAG&nbsp;sur&nbsp;procédures</span><span>Dashboards&nbsp;KPI</span><span>Suivi&nbsp;CAPA</span><span>Pilotage&nbsp;officine&nbsp;&amp;&nbsp;PDA</span><span>Revue&nbsp;de&nbsp;direction</span><span>Copilote&nbsp;fiscal</span>
         </div>
       </div>
       <div class="strip strip--frame">
@@ -131,31 +157,66 @@
 
       <div class="work">
         <article class="card" data-cursor="card">
+          <button class="card__mark" type="button" aria-pressed="false" aria-label="Basculer entre le problème d’origine et la version simplifiée">+</button>
           <span class="card__stamp" aria-hidden="true">Simplifié</span>
-          <h3 class="card__name">Copilote qualité PRAQ</h3>
+          <h3 class="card__name">Copilote qualité <abbr title="Pharmacien Responsable Assurance Qualité">PRAQ</abbr></h3>
+          <p class="card__status"><span aria-hidden="true">●</span> En production — usage quotidien</p>
           <p class="card__before">Le système qualité d’une pharmacie tient dans des dizaines de procédures éparpillées.</p>
-          <p class="card__after">Un copilote qui relie la documentation qualité au pilotage quotidien&nbsp;: déclarer un dysfonctionnement, suivre une CAPA, préparer une revue de direction deviennent des gestes simples.</p>
+          <p class="card__after">Utilisé chaque jour par le PRAQ et la direction sur un <abbr title="Système de Management de la Qualité">SMQ</abbr> de 19&nbsp;processus et 109&nbsp;SOPs&nbsp;: des agents collectent les pages non sensibles du <abbr title="Système qualité pharmaceutique — logiciel de communication interne et de traçabilité, hébergé HDS">LQO</abbr>, relèvent les températures et préparent les décisions — chacune validée par un humain. Données sensibles anonymisées, conforme RGPD.</p>
+          <figure class="card__shot">
+            <img src="shot-praq.webp" alt="Écran de connexion du copilote PRAQ — réservé au PRAQ et au pharmacien adjoint" loading="lazy" width="476" height="473" />
+            <figcaption>// Capture — outil confidentiel, accès réservé</figcaption>
+          </figure>
         </article>
 
         <article class="card" data-cursor="card">
+          <button class="card__mark" type="button" aria-pressed="false" aria-label="Basculer entre le problème d’origine et la version simplifiée">+</button>
           <span class="card__stamp" aria-hidden="true">Simplifié</span>
-          <h3 class="card__name">RAG sur SOPs</h3>
-          <p class="card__before">Des centaines de pages de procédures que personne ne lit.</p>
-          <p class="card__after">Un moteur qui répond aux questions terrain en langage naturel, en s’appuyant sur les bonnes sources, au bon moment.</p>
+          <h3 class="card__name">E.V.A — Éligibilité Vaccinale Anonyme</h3>
+          <p class="card__status"><span aria-hidden="true">●</span> Déployé — Pharma78Pure</p>
+          <p class="card__before">Au comptoir, juger du bien-fondé d’une vaccination oblige à croiser calendrier, profil du patient et recommandations — dans l’instant.</p>
+          <p class="card__after">Trois entrées pensées comptoir&nbsp;: vérifier un vaccin précis, évaluer pour un patient donné, consulter le calendrier vaccinal. Anonyme, conforme RGPD.</p>
+          <figure class="card__shot">
+            <img src="shot-eva.webp" alt="Écran de connexion d’E.V.A — accès réservé aux pharmaciens habilités" loading="lazy" width="516" height="531" />
+            <figcaption>// Capture — accès réservé aux pharmaciens habilités</figcaption>
+          </figure>
         </article>
 
         <article class="card" data-cursor="card">
+          <button class="card__mark" type="button" aria-pressed="false" aria-label="Basculer entre le problème d’origine et la version simplifiée">+</button>
           <span class="card__stamp" aria-hidden="true">Simplifié</span>
-          <h3 class="card__name">Dashboards KPI</h3>
+          <h3 class="card__name">Dashboards <abbr title="Key Performance Indicators — indicateurs clés de performance">KPI</abbr></h3>
+          <p class="card__status"><span aria-hidden="true">●</span> Livré</p>
           <p class="card__before">Des indicateurs noyés dans des tableurs.</p>
           <p class="card__after">Des tableaux de bord clairs et lisibles d’un coup d’œil, générés à partir des données brutes.</p>
         </article>
 
         <article class="card" data-cursor="card">
+          <button class="card__mark" type="button" aria-pressed="false" aria-label="Basculer entre le problème d’origine et la version simplifiée">+</button>
           <span class="card__stamp" aria-hidden="true">Simplifié</span>
           <h3 class="card__name">Copilote fiscal</h3>
+          <p class="card__status"><span aria-hidden="true">●</span> Livré</p>
           <p class="card__before">Une déclaration complexe, multi-sources, à risque d’erreur.</p>
           <p class="card__after">Un copilote qui guide phase par phase, garde une trace réversible de chaque décision, et signale les écarts.</p>
+          <p class="card__note">// Même méthode, autre terrain réglementé.</p>
+        </article>
+
+        <article class="card card--wip" data-cursor="card">
+          <button class="card__mark" type="button" aria-pressed="false" aria-label="Basculer entre le problème d’origine et la version simplifiée">+</button>
+          <span class="card__stamp" aria-hidden="true">En cours</span>
+          <h3 class="card__name">PickMe — pilotage officine</h3>
+          <p class="card__status"><span aria-hidden="true">●</span> En cours de déploiement</p>
+          <p class="card__before">Le pilotage managérial de l’officine et de la <abbr title="Préparation des Doses à Administrer">PDA</abbr> se fait de tête, entre deux comptoirs.</p>
+          <p class="card__after">Un outil managérial qui structure le pilotage de l’équipe et de la PDA — en cours de déploiement en conditions réelles.</p>
+        </article>
+
+        <article class="card card--wip" data-cursor="card">
+          <button class="card__mark" type="button" aria-pressed="false" aria-label="Basculer entre le problème d’origine et la version simplifiée">+</button>
+          <span class="card__stamp" aria-hidden="true">En cours</span>
+          <h3 class="card__name"><abbr title="Retrieval-Augmented Generation — génération augmentée par recherche documentaire">RAG</abbr> sur <abbr title="Standard Operating Procedures — procédures opératoires normalisées">SOPs</abbr></h3>
+          <p class="card__status"><span aria-hidden="true">●</span> En construction — données préparées</p>
+          <p class="card__before">109 SOPs, 19 processus — que personne n’a le temps de lire.</p>
+          <p class="card__after">Un moteur qui répondra aux questions terrain en langage naturel, sources citées. Les SOPs sont en production d’écriture, les données déjà prêtes pour l’intégration.</p>
         </article>
       </div>
     </section>
@@ -168,12 +229,20 @@
       </div>
 
       <p class="why">
-        Je suis pharmacien. Je connais de l’intérieur un métier réglementé, exigeant,
+        Je suis pharmacien — titulaire d’officine pendant quinze ans.
+        Je connais de l’intérieur un métier réglementé, exigeant,
         où la qualité n’est pas négociable. Et je construis des outils IA. Cette
         <em class="mark">double culture</em> est rare&nbsp;: je n’ai pas besoin
         qu’on me traduise le besoin métier, et je n’ai pas peur de la technique.
         J’ajoute à ça une exigence esthétique que j’assume — parce qu’un outil beau
         est un outil respecté.
+      </p>
+
+      <p class="why__proof">
+        // La preuve par E.V.A&nbsp;: trois entrées — vérifier un vaccin précis,
+        évaluer pour un patient donné, consulter le calendrier vaccinal — parce
+        qu’au comptoir, ce sont trois gestes distincts. Il fallait être derrière
+        le comptoir pour le voir.
       </p>
     </section>
 
@@ -207,7 +276,7 @@
     <section class="section section--cta" id="contact" aria-labelledby="cta-title">
       <div class="section__head">
         <span class="section__index" aria-hidden="true">06</span>
-        <h2 class="section__label" id="cta-title">Appel à l’action</h2>
+        <h2 class="section__label" id="cta-title">Contact</h2>
       </div>
 
       <div class="cta">
@@ -221,7 +290,9 @@
             <span>Me contacter</span>
             <span class="cta__button-mark" aria-hidden="true">→</span>
           </a>
+          <a class="cta__secondary" href="cv.pdf" target="_blank" rel="noopener" data-cursor="link">CV (PDF) ↓</a>
           <a class="cta__secondary" href="https://www.linkedin.com/in/emmanuel-mikaelian/" target="_blank" rel="noopener noreferrer" data-cursor="link">LinkedIn ↗</a>
+          <a class="cta__secondary" href="mailto:mikaelian78@gmail.com?subject=Acc%C3%A8s%20au%20code%20%28GitHub%29" data-cursor="link">GitHub — accès sur demande</a>
         </div>
       </div>
     </section>

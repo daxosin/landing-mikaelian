@@ -56,22 +56,38 @@ em { font-style: normal; }
 /* Signature — la marque vermillon de « ce qui reste » */
 .mark { color: var(--accent); white-space: nowrap; }
 
-/* La marque de « ce qui a été retiré » : le trait qui barre */
-.strike {
-  position: relative;
-  color: var(--muted);
-}
-.strike::after {
-  content: "";
+/* Contenu pour lecteurs d'écran / crawlers uniquement */
+.sr-only {
   position: absolute;
-  left: -0.05em; right: -0.05em;
-  top: 52%;
-  height: var(--rule);
-  background: var(--accent);
-  transform: scaleX(var(--strike, 0));
-  transform-origin: left center;
-  transition: transform .55s var(--ease-mech);
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
+
+/* Jargon explicité au survol — registre documentaire, pas ornement */
+abbr[title] {
+  text-decoration: underline dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: var(--muted);
+  cursor: help;
+}
+
+/* La marque de « ce qui a été retiré » : le trait qui barre.
+   text-decoration et non ::after → barre CHAQUE ligne quand le texte wrap
+   (un ::after positionné à 52% tombait entre deux lignes). Arbitrage :
+   l'animation devient un fondu de couleur, plus un wipe gauche→droite. */
+.strike {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-thickness: var(--rule);
+  text-decoration-color: transparent;
+  transition: text-decoration-color .55s var(--ease-mech);
+}
+.strike.is-struck { text-decoration-color: var(--accent); }
 
 /* ----------------------- Grain analogique ------------------- */
 /* Texture « document déclassifié » — fixe, au-dessus de tout, inerte. */
@@ -156,7 +172,8 @@ body.has-cursor .card { cursor: none; }
   font-size: .72rem;
   white-space: nowrap;
 }
-.site-header__spec .dot { color: var(--accent); font-size: .6em; vertical-align: middle; }
+/* cobalt, pas vermillon : rouge = occupé dans l'imaginaire commun */
+.site-header__spec .dot { color: var(--blue); font-size: .6em; vertical-align: middle; }
 .site-header__role { justify-self: end; color: var(--muted); }
 
 /* ---------------------------- Hero -------------------------- */
@@ -362,6 +379,8 @@ body.has-cursor .card { cursor: none; }
 /* Substance vérifiable, deux registres. Sens & vitesses opposés.
    Rouge = réalisations livrées · bleu = cadre santé maîtrisé. */
 .strips { overflow: hidden; border-block: 2px solid var(--ink); }
+/* WCAG 2.2.2 : tout mouvement > 5 s doit pouvoir être mis en pause */
+.strips:hover .strip__track { animation-play-state: paused; }
 .strip { overflow: hidden; }
 .strip + .strip { border-top: 2px solid var(--ink); }
 .strip--build { background: var(--accent); }
@@ -396,10 +415,12 @@ body.has-cursor .card { cursor: none; }
 /* Pression sensorielle par l'ÉCHELLE : la police reste simple et nette,
    c'est la taille du message qui presse. Le bloc remplit la largeur. */
 .section--vision { padding-block: clamp(4.5rem, 13vh, 11rem); }
+/* Échelle recalibrée : la pression reste, mais le bloc tient ~1 écran
+   sur desktop (il en faisait presque 2 à 5.25rem / 26ch). */
 .vision {
   font-family: var(--font-serif);
-  max-width: min(100%, 26ch);
-  font-size: clamp(1.85rem, 1rem + 4.8vw, 5.25rem);
+  max-width: min(100%, 30ch);
+  font-size: clamp(1.85rem, 1rem + 3.4vw, 3.9rem);
   line-height: 1.08;
   letter-spacing: -0.015em;
   font-weight: 500;
@@ -422,23 +443,34 @@ body.has-cursor .card { cursor: none; }
   flex-direction: column;
   gap: 1rem;
   overflow: hidden;
+  cursor: pointer;            /* la carte rejoue le geste au clic */
   transition: background .3s var(--ease-out);
 }
-.card::before { /* repère crosshair coin haut-droit */
-  content: "+";
+.card:hover, .card:focus-within { background: var(--paper-2); }
+
+/* Repère crosshair = VRAI bouton : rejouer complexe ⇄ simple (la carte
+   entière est cliquable, le bouton porte le clavier et l'accessibilité). */
+.card__mark {
   position: absolute;
-  top: .75rem; right: .9rem;
+  top: .35rem; right: .35rem;
+  width: 2.2rem; height: 2.2rem;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  padding: 0;
   font-family: var(--font-mono);
   color: var(--muted);
   font-size: 1rem;
+  cursor: pointer;
   transition: color .3s linear, transform .4s var(--ease-mech);
 }
-.card:hover, .card:focus-within { background: var(--paper-2); }
-.card:hover::before, .card:focus-within::before { color: var(--accent); transform: rotate(45deg); }
+.card:hover .card__mark, .card:focus-within .card__mark { color: var(--accent); }
+.card.is-simplified .card__mark { transform: rotate(45deg); }
 
 .card__stamp {
   position: absolute;
-  top: 1.4rem; right: 1.4rem;
+  top: 1.4rem; right: 2.9rem;   /* décalé du bouton crosshair */
   font-family: var(--font-mono);
   font-size: .68rem;
   text-transform: uppercase;
@@ -451,34 +483,77 @@ body.has-cursor .card { cursor: none; }
   transition: opacity .3s linear, transform .45s var(--ease-mech);
 }
 .card.is-simplified .card__stamp { opacity: 1; transform: rotate(-4deg) scale(1); }
+/* Mobile : le tampon entre dans le flux — il chevauchait les titres longs */
+@media (max-width: 540px) {
+  .card__stamp {
+    position: static;
+    order: -1;
+    align-self: flex-start;
+    margin-bottom: -0.25rem;
+  }
+}
 
 .card__name {
   font-size: clamp(1.2rem, 1rem + 1vw, 1.9rem);
   font-weight: 800;
   letter-spacing: -0.01em;
 }
+
+/* Statut honnête par projet — registre cobalt (rigueur), substance vérifiable */
+.card__status {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--blue);
+  margin-top: -0.4rem;
+}
+.card__status span { font-size: .6em; vertical-align: middle; }
+
+/* Note de méthode (copilote fiscal) — commentaire technique en pied de carte */
+.card__note {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  letter-spacing: .03em;
+  color: var(--muted);
+  margin-top: auto;
+}
+
+/* Projet en cours : le tampon passe au cobalt — on ne tamponne pas
+   « Simplifié » sur un chantier ouvert */
+.card--wip .card__stamp { color: var(--blue); border-color: var(--blue); }
+
+/* Capture d'outil — pièce versée au dossier, cadrée comme un document */
+.card__shot {
+  margin: .5rem 0 0;
+}
+.card__shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: var(--rule) solid var(--ink);
+}
+.card__shot figcaption {
+  margin-top: .5rem;
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* L'« avant » reste lisible en entier une fois barré : la troncature
+   amputait l'argument avant/après (et le texte muted reste AA). Le retrait
+   est dit par la rature, pas par l'amputation. */
 .card__before {
-  position: relative;
   color: var(--muted);
   font-size: .95rem;
   line-height: 1.4;
-  max-height: 8rem;
-  opacity: 1;
-  overflow: hidden;
-  transition: max-height .55s var(--ease-mech), opacity .4s linear;
+  text-decoration: line-through;
+  text-decoration-thickness: var(--rule);
+  text-decoration-color: transparent;
+  transition: text-decoration-color .5s var(--ease-mech);
 }
-.card__before::after {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; top: 50%;
-  height: var(--rule);
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform .5s var(--ease-mech);
-}
-.card.is-simplified .card__before { max-height: 1.4rem; opacity: .35; }
-.card.is-simplified .card__before::after { transform: scaleX(1); }
+.card.is-simplified .card__before { text-decoration-color: var(--accent); }
 
 .card__after {
   font-family: var(--font-serif);
@@ -497,6 +572,16 @@ body.has-cursor .card { cursor: none; }
   line-height: 1.2;
   letter-spacing: -0.01em;
   font-weight: 500;
+}
+
+/* La preuve concrète de la double culture — registre technique, factuel */
+.why__proof {
+  margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  max-width: 58ch;
+  font-family: var(--font-mono);
+  font-size: .82rem;
+  line-height: 1.65;
+  color: var(--muted);
 }
 
 /* ----------------------- 05 Méthode ------------------------- */
@@ -530,13 +615,15 @@ body.has-cursor .card { cursor: none; }
 
 /* ------------------------- 06 CTA --------------------------- */
 .section--cta { border-bottom: none; }
-.cta { max-width: 30ch; }
+.cta { max-width: 60ch; }
 .cta__title {
   font-size: clamp(2.2rem, 1rem + 6vw, 6rem);
   line-height: 0.98;
   letter-spacing: -0.03em;
   font-weight: 800;
   margin-bottom: 1.5rem;
+  max-width: 13ch;        /* 2 lignes équilibrées — plus de « à » orphelin */
+  text-wrap: balance;
 }
 .cta__text {
   font-family: var(--font-serif);
@@ -631,10 +718,9 @@ body.has-cursor .card { cursor: none; }
   .reveal { opacity: 1; transform: none; }
   .hero__noise { display: none; }
   .is-animated .hero__line > span { transform: none; }
-  .strike::after { transform: scaleX(1); }
+  .strike { text-decoration-color: var(--accent); }
   .section__head::after { transform: scaleX(1); }
-  .card__before { max-height: 1.4rem; opacity: .35; }
-  .card__before::after { transform: scaleX(1); }
+  .card__before { text-decoration-color: var(--accent); }
   .card__stamp { opacity: 1; transform: rotate(-4deg) scale(1); }
   .grain.is-on::after { animation: none; }
 }
