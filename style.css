@@ -523,6 +523,32 @@ body.has-cursor .card { cursor: none; }
    « Simplifié » sur un chantier ouvert */
 .card--wip .card__stamp { color: var(--blue); border-color: var(--blue); }
 
+/* Carte-série : inventaire sans geste avant/après — pas de bouton, pas de tampon */
+.card--more { cursor: default; }
+.card__list {
+  display: grid;
+  gap: .8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.card__list li {
+  position: relative;
+  padding-left: 1.4rem;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+.card__list li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  top: .1em;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: .85rem;
+}
+
 /* Capture d'outil — pièce versée au dossier, cadrée comme un document */
 .card__shot {
   margin: .5rem 0 0;
