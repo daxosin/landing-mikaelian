@@ -233,7 +233,7 @@
   function setupCopyEmail() {
     const btn = document.querySelector("[data-copy-email]");
     if (!btn) return;
-    const EMAIL = "mikaelian78@gmail.com";
+    const EMAIL = "mikaelian@gmx.com";
     const label = btn.textContent;
     let timer = 0;
 
