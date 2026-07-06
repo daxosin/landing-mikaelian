@@ -226,6 +226,48 @@
     document.addEventListener("pointerenter", () => { el.style.opacity = "1"; });
   }
 
+  /* ---------------------------------------------------------
+     6. Copie de l'adresse mail — filet quand mailto: n'a pas
+        de client configuré sur le poste du visiteur
+     --------------------------------------------------------- */
+  function setupCopyEmail() {
+    const btn = document.querySelector("[data-copy-email]");
+    if (!btn) return;
+    const EMAIL = "mikaelian78@gmail.com";
+    const label = btn.textContent;
+    let timer = 0;
+
+    const fallbackCopy = () => {
+      const ta = document.createElement("textarea");
+      ta.value = EMAIL;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      ta.remove();
+    };
+
+    btn.addEventListener("click", () => {
+      const done = () => {
+        btn.textContent = "Adresse copiée ✓";
+        btn.classList.add("is-copied");
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          btn.textContent = label;
+          btn.classList.remove("is-copied");
+        }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(EMAIL).then(done, () => { fallbackCopy(); done(); });
+      } else {
+        fallbackCopy();
+        done();
+      }
+    });
+  }
+
   /* ----------------------------- Boot ---------------------- */
   function init() {
     runHero();
@@ -234,6 +276,7 @@
     setupReveal();
     setupGrain();
     setupCursor();
+    setupCopyEmail();
   }
 
   if (document.readyState === "loading") {

@@ -672,7 +672,7 @@ body.has-cursor .card { cursor: none; }
   color: var(--ink);             /* ink sur vermillon → AA confortable */
   text-decoration: none;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: clamp(.95rem, .8rem + .7vw, 1.1rem); /* l'adresse en toutes lettres tient sur mobile */
   letter-spacing: .01em;
   padding: 1rem 1.25rem 1rem 1.75rem;
   border: 2px solid var(--accent);
@@ -699,6 +699,24 @@ body.has-cursor .card { cursor: none; }
   transition: color .2s linear, border-color .2s linear;
 }
 .cta__secondary:hover { color: var(--accent); border-color: var(--accent); }
+
+/* « Copier l'adresse » — filet mailto : le clic doit marcher même sans client mail */
+.cta__copy {
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  border-top: 0; border-left: 0; border-right: 0;
+  padding-top: 0; padding-inline: 0;
+}
+.cta__copy.is-copied { color: var(--blue); border-color: var(--blue); }
+
+.cta__note {
+  margin-top: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  letter-spacing: .03em;
+  color: var(--muted);
+}
 
 /* -------------------------- Footer -------------------------- */
 .site-footer {
